@@ -39,7 +39,7 @@ while (true){
       let elegido = opciones.find(plan => plan.plan.toLowerCase() === opcionUser);
       let importe = 0;
       
-      if (opcionUser === "Otro"){
+      if (opcionUser === "otro"){
           importe = parseInt(prompt("¿Cuánta plata querés recargar?"));
           if (isNaN(importe) || importe <= 0) {
               alert("Importe inválido. Intentá nuevamente.");
