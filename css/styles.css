@@ -1,0 +1,21 @@
+body {
+    background: rgb(12, 65, 222)
+}
+
+.background-image-1 {
+    background-image: url(/subesim-home.jpg);
+}
+
+.header{
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.display-none{
+    display: none;
+}
+
+/* .background-image-properties {
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+} */
