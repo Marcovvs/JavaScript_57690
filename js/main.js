@@ -137,26 +137,26 @@ verModelosButton.addEventListener("click", function() {
         {
             id: "sube-01",
             titulo: "SUBE EDICIÓN: NEGRO",
-            imagen: "/sube-modelo.jpg",
+            imagen: "./sube-negro.png",
             precio: 500,
         },
         {
             id: "sube-02",
-            titulo: "SUBE EDICIÓN: BLANCO",
-            imagen: "/sube-modelo.jpg",
+            titulo: "SUBE EDICIÓN: VERDE",
+            imagen: "./sube-verde.png",
             precio: 500,
         },
         {
             id: "sube-03",
-            titulo: "SUBE EDICIÓN: COPA AMERICA 2024",
-            imagen: "/sube-modelo.jpg",
-            precio: 1000,
+            titulo: "SUBE EDICIÓN: VIOLETA",
+            imagen: "./sube-violeta.png",
+            precio: 500,
         },
         {
             id: "sube-04",
-            titulo: "SUBE EDICIÓN: ARGENTINA",
-            imagen: "/sube-modelo.jpg",
-            precio: 1000,
+            titulo: "SUBE EDICIÓN: AZUL",
+            imagen: "./sube-azul.png",
+            precio: 500,
         }
     ];
     
