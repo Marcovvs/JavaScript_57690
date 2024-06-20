@@ -1,0 +1,26 @@
+[
+    {
+      "id": "sube-01",
+      "titulo": "SUBE EDICIÓN: NEGRO",
+      "imagen": "../img/sube-negro.png",
+      "precio": 500
+    },
+    {
+      "id": "sube-02",
+      "titulo": "SUBE EDICIÓN: VERDE",
+      "imagen": "../img/sube-verde.png",
+      "precio": 500
+    },
+    {
+      "id": "sube-03",
+      "titulo": "SUBE EDICIÓN: VIOLETA",
+      "imagen": "../img/sube-violeta.png",
+      "precio": 500
+    },
+    {
+      "id": "sube-04",
+      "titulo": "SUBE EDICIÓN: AZUL",
+      "imagen": "../img/sube-azul.png",
+      "precio": 500
+    }
+  ]

@@ -2,24 +2,50 @@ document.addEventListener("DOMContentLoaded", function() {
     const recargar = document.querySelector("#recargar");
     const saldoInicial = document.querySelector("#saldoInicial");
     const inputContainer = document.querySelector("#input-container");
+    const historialSection = document.querySelector("#historialSection");
+    const historialRecargasDiv = document.querySelector("#historialRecargas");
+    const eliminarHistorialBtn = document.querySelector("#eliminarHistorialBtn");
+    const verModelosButton = document.querySelector("#verModelos");
+    const modelosSection = document.querySelector("#modelosSection");
+    const carritoCantidad = document.querySelector("#carritoCantidad");
+    const modalCarritoContenido = document.querySelector("#modalCarritoContenido");
 
-    recargar.addEventListener("click", mostrarInputSaldo);
+    let seccionesVisibles = false;
+    let modelosEnCarrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    let modelos = [];
 
+    if (!localStorage.getItem("historialRecargas")) {
+        localStorage.setItem("historialRecargas", JSON.stringify([]));
+    }
+
+    recargar.addEventListener("click", toggleSecciones);
     saldoInicial.className = "text-white";
 
+    function toggleSecciones() {
+        seccionesVisibles = !seccionesVisibles;
+        if (seccionesVisibles) {
+            mostrarInputSaldo();
+            historialSection.style.display = "block";
+            mostrarHistorial();
+        }else {
+            inputContainer.innerHTML = "";
+            saldoInicial.textContent = "";
+            historialSection.style.display = "none";
+        }
+    }
+
     function mostrarInputSaldo() {
-        
         const h2 = document.createElement("h2");
         h2.textContent = "Ingresá tu saldo restante:";
-        h2.className = "text-white"
+        h2.className = "text-white";
         const input = document.createElement("input");
-        input.className = "me-5";
+        input.className = "me-5 hvr-box-shadow-inset";
         input.type = "number";
         input.id = "saldoInput";
         input.placeholder = "0";
         const btnConfirmar = document.createElement("button");
         btnConfirmar.textContent = "Confirmar";
-        btnConfirmar.className = "btn btn-primary btn-outline-light";
+        btnConfirmar.className = "btn btn-primary btn-outline-light hvr-grow";
         btnConfirmar.addEventListener("click", verRecarga);
 
         inputContainer.innerHTML = "";
@@ -35,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (isNaN(saldo) || saldo < -500 || saldo > 10000) {
             if (isNaN(saldo)) {
                 alert("Carácter desconocido, intentá nuevamente.");
-            } else {
+            }else {
                 alert("ALERTA. El saldo mínimo es $-500 y máximo $10.000, Intentá nuevamente.");
             }
             return;
@@ -48,11 +74,11 @@ document.addEventListener("DOMContentLoaded", function() {
     function saldoCheck(saldo) {
         if (saldo > 0 && saldo < 10000) {
             saldoInicial.textContent = `Perfecto, tenés $${saldo} en tu tarjeta SUBE. Continuá eligiendo tu 'plan de recarga' ideal:`;
-        } else if (saldo === 0) {
+        }else if (saldo === 0) {
             saldoInicial.textContent = "Estás en 0, ni más ni menos. Continuá eligiendo tu 'plan de recarga' ideal:";
-        } else if (saldo < 0 && saldo >= -500) {
+        }else if (saldo < 0 && saldo >= -500) {
             saldoInicial.textContent = "Cuidado, estás en negativo. El importe se verá afectado... Continuá eligiendo tu 'plan de recarga' ideal:";
-        } else {
+        }else {
             saldoInicial.textContent = "**Saldo desconocido, intentá nuevamente.**";
         }
     }
@@ -71,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function() {
         opciones.forEach(opcion => {
             const btnPlan = document.createElement("button");
             btnPlan.textContent = `${opcion.plan} ($${opcion.importe})`;
-            btnPlan.className = "btn btn-secondary m-2";
+            btnPlan.className = "btn btn-secondary m-2 hvr-float";
             btnPlan.addEventListener("click", () => acreditarSaldo(saldo, opcion.importe));
             planesContainer.appendChild(btnPlan);
         });
@@ -97,70 +123,72 @@ document.addEventListener("DOMContentLoaded", function() {
         const nuevoSaldo = saldo + importe;
         if (nuevoSaldo < 0) {
             alert("**Tu saldo es negativo. La carga mínima aceptada es aquella que te deje en $0 o más.**");
-        } else if (nuevoSaldo > 10000) {
+        }else if (nuevoSaldo > 10000) {
             alert("**El saldo máximo permitido es de $10000. Por favor, ingresa un importe menor.**");
-        } else {
+        }else {
             alert(`ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ*...recargando $${importe} pesos...*ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤSaldo final: $${nuevoSaldo} pesos en tu tarjeta SUBE.`);
             saldo = nuevoSaldo;
 
+            const historialRecargas = JSON.parse(localStorage.getItem("historialRecargas")) || [];
+            const nuevaRecarga = {
+                monto: importe,
+                fecha: new Date().toLocaleString(),
+                saldo: nuevoSaldo
+            };
+            historialRecargas.push(nuevaRecarga);
+            localStorage.setItem("historialRecargas", JSON.stringify(historialRecargas));
+
             mostrarInputSaldo();
+            mostrarHistorial();
 
             let otraRecarga = confirm("¿Querés realizar otra recarga?");
             if (otraRecarga) {
                 saldoInicial.textContent = `Saldo actual: $${nuevoSaldo} pesos en tu tarjeta SUBE. ¿Cuánto querés recargar?`;
-            } else {
+            }else {
                 saldoInicial.textContent = `Saldo actual: $${nuevoSaldo} pesos en tu tarjeta SUBE.`;
             }
         }
     }
-});
 
-document.addEventListener("DOMContentLoaded", function() {
-    const verModelosButton = document.querySelector("#verModelos");
-    const modelosSection = document.querySelector("#modelosSection");
-    const carritoCantidad = document.querySelector("#carritoCantidad");
-    const modalCarritoContenido = document.querySelector("#modalCarritoContenido");
+    function mostrarHistorial() {
+        const historialRecargas = JSON.parse(localStorage.getItem("historialRecargas")) || [];
+        if (historialRecargas.length === 0) {
+            historialRecargasDiv.innerHTML = "<p>No hay recargas en el historial.</p>";
+        } else {
+            historialRecargasDiv.innerHTML = historialRecargas.map(recarga =>
+                `<div class="recarga bg-dark p-2 mb-2 rounded">
+                    <p>Monto: $${recarga.monto}</p>
+                    <p>Fecha: ${recarga.fecha}</p>
+                    <p>Saldo después de la recarga: $${recarga.saldo}</p>
+                </div>`).join('');
+        }
+    }
 
-    let modelosEnCarrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    eliminarHistorialBtn.addEventListener("click", function() {
+        localStorage.removeItem("historialRecargas");
+        historialRecargasDiv.innerHTML = "No hay recargas en el historial.";
+        historialRecargasDiv.className = "mb-3 text-white"
+    });
 
-verModelosButton.addEventListener("click", function() {
-    if (modelosSection.style.display === "none" || modelosSection.style.display === "") {
+    fetch('modelos.json')
+        .then(response => response.json())
+        .then(data => {
+            modelos = data;
+            actualizarCarrito();
+            actualizarCarritoCantidad();
+            renderizarCarrito();
+        })
+        .catch(error => console.error('Error', error));
+
+    verModelosButton.addEventListener("click", function() {
+        if (modelosSection.style.display === "none" || modelosSection.style.display === "") {
             modelosSection.style.display = "block";
             verModelosButton.textContent = "OCULTAR MODELOS";
-    }else {
+        }else {
             modelosSection.style.display = "none";
             verModelosButton.textContent = "VER MODELOS";
-    }
-});
-
-    const modelos = [
-        {
-            id: "sube-01",
-            titulo: "SUBE EDICIÓN: NEGRO",
-            imagen: "./sube-negro.png",
-            precio: 500,
-        },
-        {
-            id: "sube-02",
-            titulo: "SUBE EDICIÓN: VERDE",
-            imagen: "./sube-verde.png",
-            precio: 500,
-        },
-        {
-            id: "sube-03",
-            titulo: "SUBE EDICIÓN: VIOLETA",
-            imagen: "./sube-violeta.png",
-            precio: 500,
-        },
-        {
-            id: "sube-04",
-            titulo: "SUBE EDICIÓN: AZUL",
-            imagen: "./sube-azul.png",
-            precio: 500,
         }
-    ];
-    
-    actualizarCarrito();
+    });
 
     function actualizarCarrito() {
         const btnAgregar = document.querySelectorAll(".producto-agregar");
@@ -196,20 +224,22 @@ verModelosButton.addEventListener("click", function() {
         modalCarritoContenido.innerHTML = "";
         if (modelosEnCarrito.length === 0) {
             modalCarritoContenido.innerHTML = "<p>No hay productos en el carrito.</p>";
+            document.querySelector("#totalPrecio").textContent = "Total: $0";
         }else {
-            modelosEnCarrito.forEach(modelo => {
-            const modeloHTML = `
-                <div class="producto-en-carrito">
-                    <img src="${modelo.imagen}" alt="${modelo.titulo}" class="img-fluid" width="50">
-                    <div>
-                        <h6>${modelo.titulo}</h6>
-                        <p>Precio: $${modelo.precio}</p>
-                        <button class="btn btn-danger btn-eliminar mb-2">Eliminar</button>
-                    </div>
-                </div>
-            `;
-            modalCarritoContenido.insertAdjacentHTML("beforeend", modeloHTML);
-        });
+            modelosEnCarrito.forEach((modelo, index) => {
+                const modeloHTML =
+                `<div class="producto-en-carrito bg-primary mb-2 rounded p-2" data-index="${index}">
+                        <img src="${modelo.imagen}" alt="${modelo.titulo}" class="img-fluid" width="50">
+                        <div>
+                            <h6 class="mt-2 mb-0">${modelo.titulo}</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="mb-1">Precio: $${modelo.precio}</p>
+                                <button class="btn btn-danger btn-eliminar mb-1 hvr-wobble-horizontal">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>`;
+                modalCarritoContenido.insertAdjacentHTML("beforeend", modeloHTML);
+            });
 
             const totalPrecio = calcularTotalPrecio();
             document.querySelector("#totalPrecio").textContent = `Total: $${totalPrecio}`;
@@ -232,4 +262,27 @@ verModelosButton.addEventListener("click", function() {
     actualizarCarrito();
     actualizarCarritoCantidad();
     renderizarCarrito();
+
+    const datainfo = document.querySelector("#datainfo");
+
+    const sweetAlertExit = () => {
+        Swal.fire({
+            title: "<strong>Tener en cuenta:</strong>",
+            icon: "info",
+            html:
+            `<ul class="text-start">
+                <li>El límite del saldo es de $10.000</li>
+                <li>El mínimo de saldo es de $-500</li>
+                <li>El importe máximo es de $5.000</li>
+                <li>No utilizar 'símbolo peso' ($), puntos, ni comas.</li>
+                <li>La carga mínima aceptada es aquella que da $0.</li>
+            </ul>`,
+            showCloseButton: true,
+            focusConfirm: false,
+            confirmButtonText: `Ok!`,
+            confirmButtonColor: `gray`,
+          });
+    }
+
+    datainfo.addEventListener("click", sweetAlertExit)
 });
